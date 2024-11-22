@@ -1,4 +1,5 @@
 # stm32cubeide_guide
+
 ## 주저리주저리
 도무지 STM32cubeide의 설정값에 대한 설명과 데이터시트상의 register가 매치가 안되서 작성함
 
@@ -23,12 +24,12 @@
 
  
 ## 목차
-1. [SYSTICK](SYSTICK\SYSTICK.md)
-2. [GPIO](GPIO\GPIO.md)
-3. [TIMER](TIMER\TIMER.md)
-4. [ADC](ADC\ADC.md)
-5. [UART](UART\UART.md)
-6. [SPI](SPI\SPI.md)
-7. [DMA](DMA\DMA.md)
-8. [NVIC](NVIC\NVIC.md)
-9. [EXTI](EXTI\EXTI.md)
+1. [SYSTICK](SYSTICK/SYSTICK.md)
+2. [GPIO](GPIO/GPIO.md)
+3. [TIMER](TIMER/TIMER.md)
+4. [ADC](ADC/ADC.md)
+5. [UART](UART/UART.md)
+6. [SPI](SPI/SPI.md)
+7. [DMA](DMA/DMA.md)
+8. [NVIC](NVIC/NVIC.md)
+9. [EXTI](EXTI/EXTI.md)
