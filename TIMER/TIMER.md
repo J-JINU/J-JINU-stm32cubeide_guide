@@ -15,7 +15,7 @@ LL_TIM_SetPrescaler(TIM_TypeDef *TIMx, uint32_t Prescaler)
 NVIC탭에서 interrupt enable한다.
 
 코드 생성후
-```
+```c
 void MX_TIMx_Init(void)
 ```
 위 함수의 마지막 "USER CODE"작성 부분에 아래의 형태로 코드를 추가한다.
@@ -29,7 +29,7 @@ LL_TIM_EnableCounter(TIMx);
 주기 설정 이후 "Automatic Output State"를 enable로 변경한다.
 
 코드 생성후
-```
+```c
 void MX_TIMx_Init(void)
 ```
 위 함수의 마지막 "USER CODE"작성 부분에 아래의 형태로 코드를 추가한다.
@@ -40,7 +40,7 @@ LL_TIM_EnableCounter(TIMx);
 LL_TIM_OC_SetCompareCHx(TIMx, duty);
 ```
 이후 듀티 조정은 
-``` c
+```c
 LL_TIM_OC_SetCompareCHx(TIMx, duty)
 ```
 함수로 할 수 있다.
