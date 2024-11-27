@@ -1,4 +1,9 @@
-void SysTick_Handler(void) 동작
-systick interrupt를 발생시키기 위해서는 LL_SYSTICK_EnableIT(); 를 사용해야한다.
-참고로 HAL에서는 자동으로 SysTick_Handler함수가 동작된다고 알고있다.
+```c
+LL_SYSTICK_EnableIT();
+```
+systick 인터럽트를 발생시키기위해서 위의 함수를 main의 while이전에 작성해야 1ms인터럽트가 동작한다.
 
+```c
+void SysTick_Handler(void)
+```
+systick이 1ms마다 인터럽트 발생시켜서 위의 함수를 호출함
