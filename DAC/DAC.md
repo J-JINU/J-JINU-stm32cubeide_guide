@@ -22,10 +22,19 @@ LL_DAC_Enable(DACx, LL_DAC_CHANNEL_x);
     /* Trig DAC conversion by software */
     LL_DAC_TrigSWConversion(DACx, LL_DAC_CHANNEL_x);
 ```
+* 참고사항
 
+  ```c
+    LL_DAC_Enable(DACx, LL_DAC_CHANNEL_x | LL_DAC_CHANNEL_y);
+  ```
+  위의 코드는 불가능하다.
+  ```c
+    LL_DAC_TrigSWConversion(DACx, LL_DAC_CHANNEL_x | LL_DAC_CHANNEL_y);
+  ```
+  위의 코드는 가능하다.
 
 ## DMA와 TIMER를 이용하여 WAVE 출력하기
-1. wave의 주기만큼 TIMER주기를 설정한다.
+1. wave의 주기와 배열의 크기를 기자고 TIMER주기를 설정한다.
 2. DAC parameter에서 Trigger를 Timer로 설정한다.
 3. 배열에 원하는 WAVE형태의 12bit 데이터를 만든다.
 4. 아래의 코드를 이용하여 DMA를 설정한다.
