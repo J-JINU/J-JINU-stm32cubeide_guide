@@ -31,6 +31,5 @@
 5. [DAC](DAC/DAC.md)
 6. [UART](UART/UART.md)
 7. [SPI](SPI/SPI.md)
-8. [DMA](DMA/DMA.md)
-9. [NVIC](NVIC/NVIC.md)
-10. [EXTI](EXTI/EXTI.md)
+8. [NVIC](NVIC/NVIC.md)
+9.  [EXTI](EXTI/EXTI.md)
