@@ -33,3 +33,7 @@
 7. [SPI](SPI/SPI.md)
 8. [NVIC](NVIC/NVIC.md)
 9.  [EXTI](EXTI/EXTI.md)
+
+## STM MCU 처음 사용하는 회로 설계자와 프로그램 개발자 주의할 점
+boot0, boot1을 주의하라
+잘못하면 프로그램 안넣었는데 MCU에서 HIGH 출력이 나간다. 쇼트나서 차단기 떨어질 뻔 했다.
