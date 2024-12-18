@@ -17,3 +17,27 @@ Compare unit을 여러개 사용가능한데 이를 이용하셔 timer의 1주�
 
 자유도가 너무 높고 설정할 수 있는 항목들이 매우 많은 관계로 GUI에서 설정하는 것에서 어려움을 느낄 수 밖에 없으므로 이런저런 설정을 해보면서 익혀나가길 바란다.
 
+
+## DeadTime 계산하기
+Deadtime주파수는 아래와 같다.
+
+fDTG = fHRTIM * X
+
+* fDTG : Deadtime timer count의 주기이다.
+* fHRTIM : Clock Configuration에서 HRTIMER의 클럭과 동일하다.
+
+Rising/Falling Value를 크게하면 DT가 늘어난다.
+DT계산은 아래와 같다.
+
+DeadTime = tDTG * Rising/Falling Value
+
+* tDTG : 1 / fDTG한 값으로 1주기당 시간이다.
+
+EX) fHRTIM이 170Mhz / fDTG = fHRTIM * 8 / Value = 500인 경우 tDTG는 약 0.73ns가 되고 0.73ns * 500은 365ns가 된다. DeadTime은 계산식 상으로 약 365ns가 된다.
+실제로 측정시 약간의 오차는 존재하므로 항상 측정을 하고 적절한 DT를 찾도록 한다.
+
+## HRTIM 실사용
+LL_HRTIM_EnableOutput(HRTIM1, LL_HRTIM_OUTPUT_TC1 | LL_HRTIM_OUTPUT_TC2
+			| LL_HRTIM_OUTPUT_TD1 | LL_HRTIM_OUTPUT_TD2
+			| LL_HRTIM_OUTPUT_TF1 | LL_HRTIM_OUTPUT_TF2);
+  LL_HRTIM_TIM_CounterEnable(HRTIM1, LL_HRTIM_TIMER_C | LL_HRTIM_TIMER_D | LL_HRTIM_TIMER_F);
