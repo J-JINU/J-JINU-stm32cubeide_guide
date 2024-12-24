@@ -19,11 +19,48 @@ Async 모드를 선택하면 아래에 Flow Control 항목이 활성화된다. D
  * EX. baudrate :9600bps -> 실제 byte전송 속도는 960Bps가 된다.
 
 ## FIFO Mode
--
+- enable 하면 8바이트 FIFO 버퍼가 활성화된다. 모아서 한 번에 반복문으로 처리하는 것이 더 빠를 것이라는 것을 뇌는 알고 있으나 실제로 데이터가 몇 byte가 들어올지 모르는 경우가 더 많을 것이라고 생각하므로 굳이 써야하나 싶다.
 
 ## Interrupt
 개인적으로 UART사용시 DMA 구성은 TX만 DMA 처리하고 RX는 인터럽트로 처리하는 것을 선호한다.
 따라서 NVIC탭에서 UART항목에 체크한다.
+
+### RX interrupt
+RX interrupt를 사용하려면 아래의 코드를 추가한다.
+```c
+LL_USART_EnableIT_RXNE(UARTx or USARTx);
+```
+RX interrupt는 별도의 flag clear가 없고 FIFO 버퍼에 값을 읽어서 비워야 clear 된다 
+``` c
+LL_USART_IsActiveFlag_RXNE(UARTx or USARTx)
+```
+버퍼에 데이터가 들어오면 위의 코드가 true가 된다.
+이때 아래의 코드를 사용하면 버퍼의 데이터를 비우게 된다.
+```c
+tmp = LL_USART_ReceiveData8(UARTx);
+```
+
+만약 loopback 테스트를 하고싶다면 아래의 코드를 사용하면된다.
+```c
+LL_USART_TransmitData8(UART5, LL_USART_ReceiveData8(UART5));
+```
+RX interrupt관련 전체 코드는 아래와 같다.
+
+```c
+/*UART와 관련된 인터럽트 발생시 전부 여기서 처리해야함*/
+void UARTx_IRQHandler(void)
+{
+  /* USER CODE BEGIN UART5_IRQn 0 */
+  if(LL_USART_IsActiveFlag_RXNE(UART5)){
+      /* RX 버퍼에 데이터가 있으면 아래의 코드 실행 */
+      LL_USART_TransmitData8(UART5, LL_USART_ReceiveData8(UART5));//loopback
+  }
+  /* USER CODE END UART5_IRQn 0 */
+  /* USER CODE BEGIN UART5_IRQn 1 */
+
+  /* USER CODE END UART5_IRQn 1 */
+}
+```
 
 ## DMA
 
