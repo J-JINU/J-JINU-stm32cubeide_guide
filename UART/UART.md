@@ -25,7 +25,9 @@ Async 모드를 선택하면 아래에 Flow Control 항목이 활성화된다. D
 개인적으로 UART사용시 DMA 구성은 TX만 DMA 처리하고 RX는 인터럽트로 처리하는 것을 선호한다.
 따라서 NVIC탭에서 UART항목에 체크한다.
 
-### RX interrupt
+## RX
+* RX에서 DMA를 사용하지는 않는것을 선호하는 편이다. 이유는 몇 byte가 들어올지 확정짓기가 힘들기 때문이다 당연히 모아서 한번에 반복문 돌리는 것이 성능적으로는 좋다는 것을 뇌는 알고 있다.
+ 
 RX interrupt를 사용하려면 아래의 코드를 추가한다.
 ```c
 LL_USART_EnableIT_RXNE(UARTx or USARTx);
