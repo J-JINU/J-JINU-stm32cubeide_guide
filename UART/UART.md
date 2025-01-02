@@ -75,8 +75,7 @@ DMA로 TX전송중 에러가 발생할 경우를 알고싶다면 아래의 코�
 ```c
 LL_USART_EnableDMAReq_TX(USARTx);
 ```
-
-위의 코드를 이용하여 활성화를 시켰다면 아래의 코드를 stm32xxxx_it.c파일에서 
+전송이 완료되었거나 DMA에러가 발생한 것을 체크하려면 위의 코드를 이용하여 활성화를 시켰다면 아래의 코드를 stm32xxxx_it.c파일에서 
 ```c
 void DMAx_Channelx_IRQHandler(void)
 ```
@@ -138,10 +137,15 @@ LL_DMA_EnableChannel(DMAx, LL_DMA_CHANNEL_x);
 ```
 
 ## Normal Mode vs Circular Mode
-normal mode사용시 데이터를 전송하고 싶을때마다 아래의 코드를 사용해야한다.
+* normal mode사용시 데이터를 전송하고 싶을때마다 아래의 코드를 사용해야한다.
 ```c
 LL_DMA_EnableChannel(DMAx, LL_DMA_CHANNEL_x);
 ```
+* normal mode에서 DMA가 전송을 끝내면 아래의 코드를 사용하여 DMA채널을 초기화 해야한다. 초기화를 하지 않는 경우 DMA를 통한 다음 UART 전송이 되지않는다.
+```c
+LL_DMA_DisableChannel(DMAx, LL_DMA_CHANNEL_x);
+```
+
 
 circular mode 사용시 한 번 데이터를 보내기 시작하면 아래의 코드를 사용하기 전까지 계속 반복해서 데이터를 전송한다.
 ```c
