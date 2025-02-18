@@ -100,26 +100,61 @@ uint8_t SPIx_TransmitReceive(uint8_t data){
 다만 DMA로 처리하는 경우 tx와 rx의 버퍼를 동일한 크기로 2개를 사용해야하기 때문에 메모리를 2배로 사용하게 된다는 단점이 있다.
 
 DMA를 사용하기 위해서는 아래의 코드를 사용하여 DMA를 활성화 한다.
-``` c 
- LL_SPI_EnableDMAReq_TX(SPI1);
- LL_SPI_EnableDMAReq_RX(SPI1);
+``` c
+/*
+    tx/rx의 인터럽트를 활성화 한다.
+    LL_DMA_EnableIT_TC는 설정한 버퍼 사이즈만큼 dma처리되면 발생하는 인터럽트를 활성화하는 함수이다.
+
+    LL_DMA_EnableIT_TE는 dma에서 에러가 발생하면 발생하는 인터럽트를 활성화하는 함수이다.
+*/
+    LL_DMA_EnableIT_TC(DMAx, LL_DMA_CHANNEL_x);
+    LL_DMA_EnableIT_TE(DMAx, LL_DMA_CHANNEL_x);
+    LL_DMA_EnableIT_TC(DMAx, LL_DMA_CHANNEL_x);
+    LL_DMA_EnableIT_TE(DMAx, LL_DMA_CHANNEL_x);
+    LL_SPI_EnableDMAReq_TX(SPIx);
+    LL_SPI_EnableDMAReq_RX(SPIx);
 ```
 
 데이터를 송수신하기위해서는 아래의 코드를 이용하여 송수신을 진행한다.
 
 ``` c
+    /*
+        LL_DMA_ConfigAddresses(DMAx, Channel, SrcAddress, DstAddress, Direction)
+        를 이용하여 tx/rx버퍼를 설정한다.
+        LL_DMA_SetDataLength(DMAx, Channel, NbData)
+        를 이용하여 tx/rx 버퍼의 사이즈를 설정한다.
+
+        LL_DMA_EnableChannel(DMAx, Channel)를 이용하여 dma를 활성화 시킨다.
+
+        데이터 전송은 rx dma를 먼저 활성화 시키고 tx dma를 활성화 시킨다. 이유는 tx를 보내면 rx가 동시에 들어오는데 설정을 하는데 걸리는 시간에 의해서 데이터가 소실될 수 있기 때문이다.
+    */
+
 	//dma spi tx set
-	LL_DMA_ConfigAddresses(DMAx, LL_DMA_CHANNEL_x, (uint32_t) tx_buf,
-			LL_SPI_DMA_GetRegAddr(SPIx),
-			LL_DMA_GetDataTransferDirection(DMAx, LL_DMA_CHANNEL_x));
-	LL_DMA_SetDataLength(DMA1, LL_DMA_CHANNEL_x, Length);
+	LL_DMA_ConfigAddresses(DMAx, LL_DMA_CHANNEL_x, (uint32_t) tx_buf, LL_SPI_DMA_GetRegAddr(SPIx), LL_DMA_GetDataTransferDirection(DMAx ,LL_DMA_CHANNEL_x));
+	LL_DMA_SetDataLength(DMA1, LL_DMA_CHANNEL_x,Length);
 
 	//dma spi rx set
-	LL_DMA_ConfigAddresses(DMAx, LL_DMA_CHANNEL_x, LL_SPI_DMA_GetRegAddr(SPIx),
-			(uint32_t) rx_buf,
-			LL_DMA_GetDataTransferDirection(DMAx, LL_DMA_CHANNEL_x));
+	LL_DMA_ConfigAddresses(DMAx, LL_DMA_CHANNEL_x, LL_SPI_DMA_GetRegAddr(SPIx), (uint32_t) rx_buf, LL_DMA_GetDataTransferDirection(DMAx, LL_DMA_CHANNEL_x));
 	LL_DMA_SetDataLength(DMAx, LL_DMA_CHANNEL_x, Length);
 
-	LL_DMA_EnableChannel(DMAx, LL_DMA_CHANNEL_x);
-	LL_DMA_EnableChannel(DMAx, LL_DMA_CHANNEL_x);
+    //spi dma start
+	LL_DMA_EnableChannel(DMAx, LL_DMA_CHANNEL_x); //rx dma
+	LL_DMA_EnableChannel(DMAx, LL_DMA_CHANNEL_x); //tx dma
 ```
+
+이후 데이터사이즈만큼 처리가 완료되면 아래의 함수에 인터럽트가 발생한다.
+``` c
+void DMAx_Channelx_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Channel7_IRQn 0 */
+	if (LL_DMA_IsActiveFlag_TCx(DMAx)) {
+		LL_DMA_ClearFlag_TCx(DMAx);
+		LL_DMA_DisableChannel(DMAx, LL_DMA_CHANNEL_x);
+	}
+  /* USER CODE END DMA1_Channel7_IRQn 0 */
+  /* USER CODE BEGIN DMA1_Channel7_IRQn 1 */
+
+  /* USER CODE END DMA1_Channel7_IRQn 1 */
+}
+```
+tx/rx둘 다 인터럽트가 발생하도록 하였으므로 두 채널 모두 체크를 해야하고 TC인터럽트가 발생하면 dma channel을 비활성화 해야 다음 데이터 전송을 시작할 수 있다.
